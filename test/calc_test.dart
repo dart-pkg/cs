@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:debug_output/debug_output.dart';
 import 'package:cs/cs.dart';
 
-main() {
+void main() {
   group('Calculator', () {
     test('addOne', () {
       var calc = Calculator();
