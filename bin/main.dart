@@ -2,12 +2,76 @@
 
 import 'package:cs_scan/cs_scan.dart';
 import 'package:debug_output/debug_output.dart';
+import 'package:std/std.dart';
 
-void main() {
-  var csScan = CsScan('~/cs-cmd/Test.Main/Test.Main.cs');
+void main(List<String> args) {
+  if (isInDebugMode) {
+    args = ['~/cs-cmd/Test.Main/Test.Main.cs'];
+  }
+  String projFileName = args[0];
+  projFileName = pathExpand(projFileName);
+  var csScan = CsScan(projFileName);
   echo(csScan.$sourceSet);
+  echo(csScan.$pkgSet);
   echo(csScan.$refSet);
   echo(csScan.$embedSet);
+  List<String> srcList = csScan.$sourceSet.toList();
+  List<String> pkgList = csScan.$pkgSet.toList();
+  List<String> asmList = csScan.$refSet.toList();
+  List<String> resList = csScan.$embedSet.toList();
+  String projDir = pathDirectoryName(projFileName);
+  echo(projDir, title: 'projDir');
+  String baseName = pathBaseName(projFileName);
+  //setCwd(projDir);
+  //Directory.CreateDirectory("build-" + baseName);
+  String csproj = pathJoin([projDir, 'build-$baseName', '$baseName.csproj']);
+  echo(csproj, title: 'csproj');
+  String csprojDir = pathDirectoryName(csproj);
+  echo(csprojDir, title: 'csprojDir');
+  String rootNS = baseName;
+  if (baseName.endsWith(".main"))
+  {
+    rootNS = pathBaseName(baseName);
+  }
+
+  echo(rootNS, title: 'rootNs');
+
+  String mainClass = "MAIN_CLASS_NOT_FOUND";
+  for (int i = 0; i< srcList.length; i++)
+  {
+    String srcFileName = pathFileName(srcList[i]);
+    String srcBaseName = srcFileName.substring(0, srcFileName.length - 3);
+    if (i == 0)
+    {
+      mainClass = "__${srcBaseName.replaceAll('.', '_').toUpperCase()}__";
+    }
+  }
+  echo(mainClass, title: 'mainClass');
+  String pkgSpec = '';
+  for (int i = 0; i < pkgList.length; i++)
+  {
+    String pkgName = pkgList[i];
+    String pkgVer = '*';
+    pkgSpec += "\n${"""    <PackageReference Include="{{NAME}}" Version="{{VERSION}}" />""".replaceAll("{{NAME}}", pkgName).replaceAll("{{VERSION}}", pkgVer)}";
+  }
+  echo(pkgSpec, title: 'pkgSpec');
+  String asmSpec = '';
+  for (int i = 0; i < asmList.length; i++)
+  {
+    asmSpec += "\n${"""    <Reference Include="{{BASENAME}}"><HintPath>\$(HOME)/cmd/{{NAME}}</HintPath></Reference>"""
+        .replaceAll("{{BASENAME}}", pathBaseName(asmList[i]))
+        .replaceAll("{{NAME}}", asmList[i])}";
+  }
+  echo(asmSpec, title: 'asmSpec');
+  String srcSpec = '';
+  for (int i = 0; i < srcList.length; i++)
+  {
+    String srcFileName = srcList[i];
+    srcFileName = pathRelative(srcFileName, from: csprojDir);
+    String srcBaseName = srcFileName.substring(0, srcFileName.length - 3);
+    srcSpec += "\r\n${"""    <Compile Include="{{PATH}}" Link="{{NAME}}" />""".replaceAll("{{NAME}}", srcFileName).replaceAll("{{PATH}}", srcList[i])}";
+  }
+  echo(srcSpec, title: 'srcSpec');
 }
 
 String template = r'''
