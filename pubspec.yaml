@@ -1,0 +1,15 @@
+name: cs
+description: cs project
+version: 0.0.1
+homepage: 
+repository: https://github.com/dart-pkg/cs
+environment:
+  sdk: ^3.7.2
+executables:
+  cs: main
+dependencies:
+  debug_output: ^2025.504.1731
+  cs_scan: ^2025.527.825
+dev_dependencies:
+  test: ^1.26.2
+  lints: ^6.0.0
