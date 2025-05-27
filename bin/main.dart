@@ -69,9 +69,27 @@ void main(List<String> args) {
     String srcFileName = srcList[i];
     srcFileName = pathRelative(srcFileName, from: csprojDir);
     String srcBaseName = srcFileName.substring(0, srcFileName.length - 3);
-    srcSpec += "\r\n${"""    <Compile Include="{{PATH}}" Link="{{NAME}}" />""".replaceAll("{{NAME}}", srcFileName).replaceAll("{{PATH}}", srcList[i])}";
+    srcSpec += "\n${"""    <Compile Include="{{PATH}}" Link="{{NAME}}" />""".replaceAll("{{NAME}}", srcFileName).replaceAll("{{PATH}}", srcList[i])}";
   }
   echo(srcSpec, title: 'srcSpec');
+  String resSpec = '';
+  for (int i=0; i<resList.length; i++)
+  {
+    String resFileName = resList[i];
+    resFileName = pathRelative(resFileName, from: csprojDir);
+    resSpec += "\n${"""    <EmbeddedResource Include="{{PATH}}" />""".replaceAll("{{PATH}}", resFileName)}";
+  }
+  echo(resSpec, title: 'resSpec');
+  String content = template
+      .replaceAll('{{ROOTNS}}', rootNS)
+      .replaceAll('{{MAINCLASS}}', mainClass)
+      .replaceAll('{{PROGRAM}}', baseName)
+      .replaceAll('{{PACKAGES}}', pkgSpec)
+      .replaceAll('{{ASSEMBLIES}}', asmSpec)
+      .replaceAll('{{SOURCES}}', srcSpec)
+      .replaceAll('{{RESOURCES}}', resSpec)
+  ;
+  echo(content);
 }
 
 String template = r'''
@@ -116,7 +134,7 @@ String template = r'''
   </ItemGroup>
   <ItemGroup>{{SOURCES}}
   </ItemGroup>
-  <ItemGroup>{{ASSEMPLIES}}
+  <ItemGroup>{{ASSEMBLIES}}
   </ItemGroup>
   <ItemGroup>{{RESOURCES}}
   </ItemGroup>
