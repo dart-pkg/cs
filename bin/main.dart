@@ -1,15 +1,47 @@
-#! /usr/bin/env dart
+#! /usr/bin/env my-dart
 
+import 'dart:core';
+//import 'package:std/std.dart' as std_std;
+import 'package:args/args.dart' as args_args;
+//import 'package:std/command_runner.dart' as std_command_runner;
+//import 'package:std/misc.dart' as std_misc;
 import 'package:cs_scan/cs_scan.dart';
 import 'package:debug_output/debug_output.dart';
 import 'package:std/std.dart';
 import 'src/app_template.dart';
 
-void main(List<String> args) {
+Future<void> main(List<String> $args) async {
   if (isInDebugMode) {
-    args = ['~/cs-cmd/Test.Main/Test.Main.cs'];
+    $args = ['gen', '~/cs-cmd/Test.Main/Test.Main.cs'];
   }
-  String projFileName = args[0];
+  // try {
+  var $parser = args_args.ArgParser();
+  var $gen = $parser.addCommand('gen');
+  $gen.addFlag('nuget', abbr: 'n');
+  var $generate = $parser.addCommand('generate');
+  $generate.addFlag('nuget', abbr: 'n');
+  var $results = $parser.parse($args);
+  var $commandResults = $results.command;
+  if ($commandResults == null) {
+    throw 'Valid command not specified';
+  }
+  switch ($commandResults.name) {
+    case 'gen':
+    case 'generate':
+      {
+        await gen($commandResults);
+      }
+  }
+}
+
+Future<void> gen(args_args.ArgResults $commandResults) async {
+  if ($commandResults.rest.isEmpty) {
+    throw 'File name count is ${$commandResults.rest.length}: ${$commandResults.rest}';
+  }
+  bool $nuget = $commandResults.flag('nuget');
+  echo($nuget, title: r'$nuget');
+  String projFileName = $commandResults.rest[0];
+  //String projFileName = args[0];
   projFileName = pathExpand(projFileName);
   var csScan = CsScan(projFileName);
   echo(csScan.$sourceSet);
