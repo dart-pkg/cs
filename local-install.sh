@@ -12,5 +12,4 @@ dart format .
 
 cd bin
 dart compile exe main.dart
-#cp -p main.exe ~/cmd/cs.exe
-cp -p main.exe ~/cmd/cs-gen.exe
+cp -p main.exe ~/cmd/cs.exe

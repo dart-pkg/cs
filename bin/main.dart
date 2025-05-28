@@ -49,7 +49,7 @@ Future<void> gen(args_args.ArgResults $commandResults) async {
   echo(csScan.$refSet);
   echo(csScan.$embedSet);
   List<String> srcList = csScan.$sourceSet.toList();
-  List<String> pkgList = csScan.$pkgSet.toList();
+  List<CsNuget> pkgList = csScan.$pkgSet.toList();
   List<String> asmList = csScan.$refSet.toList();
   List<String> resList = csScan.$embedSet.toList();
   String projDir = pathDirectoryName(projFileName);
@@ -79,8 +79,8 @@ Future<void> gen(args_args.ArgResults $commandResults) async {
   echo(mainClass, title: 'mainClass');
   String pkgSpec = '';
   for (int i = 0; i < pkgList.length; i++) {
-    String pkgName = pkgList[i];
-    String pkgVer = '*';
+    String pkgName = pkgList[i].$name;
+    String pkgVer = pkgList[i].$version;
     pkgSpec +=
         "\n${"""    <PackageReference Include="{{NAME}}" Version="{{VERSION}}" />""".replaceAll("{{NAME}}", pkgName).replaceAll("{{VERSION}}", pkgVer)}";
   }

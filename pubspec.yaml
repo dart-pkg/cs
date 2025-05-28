@@ -9,7 +9,7 @@ executables:
   cs: main
 dependencies:
   debug_output: ^2025.504.1731
-  cs_scan: ^2025.527.1755
+  cs_scan: ^2025.528.1819
   std: ^2025.527.1952
   args: ^2.7.0
 dev_dependencies:
